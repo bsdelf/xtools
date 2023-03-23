@@ -5,6 +5,12 @@ verbose=false
 [ "$1" = -v ] && verbose=true
 
 for f in /proc/[0-9]*; do
+    CONTAINERIZED=$(grep -e /docker $f/cgroup 2>/dev/null)
+    if [ "$CONTAINERIZED" ]; then
+        cat $f/cmdline
+        echo
+        continue
+    fi
 	LIBS=$(grep -Po '    *\K    .* \(deleted\)$' $f/maps 2>/dev/null |
 		grep -v -e /SYSV \
 			-e /.cache/fontconfig \
